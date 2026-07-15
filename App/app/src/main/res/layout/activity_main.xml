@@ -16,7 +16,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_top_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvAngleLabel"
@@ -27,7 +27,7 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_top_toBottomOf="@id/tvTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
     <TextView
         android:id="@+id/tvAngleValue"
@@ -39,7 +39,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_top_toBottomOf="@id/tvAngleLabel" />
+        app:layout_constraintTop_toBottomOf="@id/tvAngleLabel" />
 
     <TextView
         android:id="@+id/tvDirectionHint"
@@ -50,7 +50,7 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_top_toBottomOf="@id/tvAngleValue" />
+        app:layout_constraintTop_toBottomOf="@id/tvAngleValue" />
 
     <Button
         android:id="@+id/btnSetCenter"
@@ -60,7 +60,7 @@
         android:text="SET AS CENTER"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_top_toBottomOf="@id/tvDirectionHint" />
+        app:layout_constraintTop_toBottomOf="@id/tvDirectionHint" />
 
     <TextView
         android:id="@+id/tvCalibratedStatus"
@@ -71,6 +71,6 @@
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_top_toBottomOf="@id/btnSetCenter" />
+        app:layout_constraintTop_toBottomOf="@id/btnSetCenter" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
