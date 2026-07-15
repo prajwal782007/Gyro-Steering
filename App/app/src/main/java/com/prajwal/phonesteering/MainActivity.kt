@@ -40,6 +40,34 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             // Flag to recalibrate on next sensor event
             isCalibrated = false 
         }
+
+        binding.btnSendTestPacket.setOnClickListener {
+            val ip = binding.etIpAddress.text.toString().trim()
+            val portStr = binding.etPort.text.toString().trim()
+
+            if (ip.isEmpty()) {
+                binding.tvNetworkStatus.text = "Invalid IP address"
+                return@setOnClickListener
+            }
+
+            val port = portStr.toIntOrNull()
+            if (port == null || port !in 1..65535) {
+                binding.tvNetworkStatus.text = "Invalid port"
+                return@setOnClickListener
+            }
+
+            binding.tvNetworkStatus.text = "Sending..."
+
+            com.prajwal.phonesteering.network.UdpSender.sendPacketAsync(ip, port, "TEST|HELLO_FROM_PHONE|1") { result ->
+                runOnUiThread {
+                    if (result.isSuccess) {
+                        binding.tvNetworkStatus.text = "Packet sent successfully"
+                    } else {
+                        binding.tvNetworkStatus.text = "Send failed: ${result.exceptionOrNull()?.message}"
+                    }
+                }
+            }
+        }
     }
 
     override fun onResume() {
