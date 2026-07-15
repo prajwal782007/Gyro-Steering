@@ -41,6 +41,41 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             isCalibrated = false 
         }
 
+        binding.btnToggleStream.setOnClickListener {
+            if (com.prajwal.phonesteering.network.UdpStreamer.isStreamingActive()) {
+                com.prajwal.phonesteering.network.UdpStreamer.stopStreaming()
+                binding.btnToggleStream.text = "START STREAMING"
+                binding.tvNetworkStatus.text = "Streaming stopped"
+            } else {
+                val ip = binding.etIpAddress.text.toString().trim()
+                val portStr = binding.etPort.text.toString().trim()
+                
+                if (!isCalibrated) {
+                    binding.tvNetworkStatus.text = "Set steering center before starting."
+                    return@setOnClickListener
+                }
+                if (ip.isEmpty()) {
+                    binding.tvNetworkStatus.text = "Invalid IP address."
+                    return@setOnClickListener
+                }
+                val port = portStr.toIntOrNull()
+                if (port == null || port !in 1..65535) {
+                    binding.tvNetworkStatus.text = "Invalid port."
+                    return@setOnClickListener
+                }
+                
+                binding.btnToggleStream.text = "STOP STREAMING"
+                com.prajwal.phonesteering.network.UdpStreamer.startStreaming(ip, port) { status ->
+                    runOnUiThread {
+                        binding.tvNetworkStatus.text = status
+                        if (status.startsWith("Send error")) {
+                            binding.btnToggleStream.text = "START STREAMING"
+                        }
+                    }
+                }
+            }
+        }
+
         binding.btnSendTestPacket.setOnClickListener {
             val ip = binding.etIpAddress.text.toString().trim()
             val portStr = binding.etPort.text.toString().trim()
@@ -105,6 +140,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             // 2 & 3 & 4. Apply deadzone and clamp to ±90° via AngleUtils
             val steeringAngle = AngleUtils.getSteeringAngle(relativeAngle, deadzone)
 
+            // Feed the final clamped steering angle to the UdpStreamer
+            com.prajwal.phonesteering.network.UdpStreamer.setSteeringAngle(steeringAngle)
+
             // Determine direction for UI feedback
             val direction = when {
                 steeringAngle < -deadzone -> "LEFT"
@@ -141,4 +179,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+    override fun onDestroy() {
+        super.onDestroy()
+        com.prajwal.phonesteering.network.UdpStreamer.stopStreaming()
+    }
 }

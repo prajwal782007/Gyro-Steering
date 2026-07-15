@@ -171,9 +171,16 @@
         </LinearLayout>
         
         <Button
+            android:id="@+id/btnToggleStream"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="START STREAMING" />
+
+        <Button
             android:id="@+id/btnSendTestPacket"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="SEND TEST PACKET" />
 
         <TextView
