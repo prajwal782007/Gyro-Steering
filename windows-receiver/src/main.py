@@ -1,9 +1,11 @@
 import sys
 import time
 import os
+import threading
 from udp_receiver import UdpReceiver
+from virtual_controller import VirtualController
 
-def print_status(receiver):
+def print_status(receiver, controller):
     receiver.update_pps()
     with receiver.lock:
         ip = receiver.phone_ip
@@ -20,18 +22,24 @@ def print_status(receiver):
     if last_time == 0.0:
         age_ms = 0
         status = "WAITING FOR PACKETS"
+        failsafe = "CENTERED"
     else:
         age_ms = int((now - last_time) * 1000)
         if age_ms > 250:
             status = "STREAM TIMEOUT"
+            failsafe = "CENTERED"
         else:
             status = "RECEIVING LIVE STEERING"
+            failsafe = "NORMAL"
 
     direction = "CENTER"
     if angle < 0:
         direction = "LEFT"
     elif angle > 0:
         direction = "RIGHT"
+        
+    ctrl_status = "ACTIVE" if controller.available else "UNAVAILABLE"
+    ctrl_steer = f"{controller.current_normalized_x:+.3f}" if controller.available else "+0.000"
         
     output = []
     output.append("========================================")
@@ -42,7 +50,7 @@ def print_status(receiver):
     output.append(f"Phone IP:            {ip}")
     output.append(f"Phone source port:   {port}")
     output.append("")
-    output.append(f"Current angle:       {angle:.3f}°")
+    output.append(f"Current angle:       {angle:+.3f}°")
     output.append(f"Direction:           {direction}")
     output.append(f"Sequence:            {seq}")
     output.append("")
@@ -53,32 +61,56 @@ def print_status(receiver):
     output.append(f"Last packet age:     {age_ms} ms")
     output.append("")
     output.append(f"Status:              {status}")
+    output.append("")
+    output.append(f"Virtual controller:  {ctrl_status}")
+    output.append(f"Controller steering: {ctrl_steer}")
+    output.append(f"Fail-safe:           {failsafe}")
     
     return "\n".join(output)
+
+def controller_worker(receiver, controller):
+    while getattr(receiver, '_running', False):
+        with receiver.lock:
+            last_time = receiver.last_packet_time
+            angle = receiver.current_angle
+            
+        now = time.monotonic()
+        if last_time == 0.0 or (now - last_time) > 0.250:
+            controller.center()
+        else:
+            controller.set_steering_angle(angle)
+            
+        time.sleep(0.01) # 100 Hz
 
 def main():
     # Enable ANSI escape sequences on Windows command prompt
     os.system('')
 
     receiver = UdpReceiver(host="0.0.0.0", port=5005)
+    controller = VirtualController()
     
     if not receiver.start():
         sys.exit(1)
         
+    if controller.available:
+        worker = threading.Thread(target=controller_worker, args=(receiver, controller), daemon=True)
+        worker.start()
+        
     # Print the first block
-    print(print_status(receiver))
+    print(print_status(receiver, controller))
     
     try:
         while True:
             time.sleep(0.1) # 10 Hz refresh
-            # Move cursor up 19 lines and reprint
-            sys.stdout.write("\033[19F")
-            sys.stdout.write(print_status(receiver) + "\n")
+            # Move cursor up 23 lines and reprint
+            sys.stdout.write("\033[23F")
+            sys.stdout.write(print_status(receiver, controller) + "\n")
             sys.stdout.flush()
     except KeyboardInterrupt:
         print("\nStopping Gyro Steering UDP receiver...")
     finally:
         receiver.stop()
+        controller.stop()
 
 if __name__ == "__main__":
     main()

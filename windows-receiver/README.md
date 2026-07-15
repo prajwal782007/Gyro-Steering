@@ -4,11 +4,18 @@ This component receives UDP packets sent from the Gyro Steering Android app.
 
 ## Requirements
 * Python 3
+* `vgamepad` Python library
+* **ViGEmBus driver**: Required by `vgamepad` to emulate a virtual Xbox 360 controller on Windows.
 
 ## Usage
 
-1. Open a terminal in this directory (`windows-receiver`).
-2. Run the receiver:
+1. Install the ViGEmBus driver if you haven't already. You can download the latest installer from the [ViGEmBus Releases page](https://github.com/nefarius/ViGEmBus/releases).
+2. Open a terminal in this directory (`windows-receiver`).
+3. Install Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Run the receiver:
 
 ```bash
 python src/main.py

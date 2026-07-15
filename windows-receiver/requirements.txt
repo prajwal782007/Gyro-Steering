@@ -1,3 +1,4 @@
-# Laptop UDP Receiver Stage A
-# This stage uses only the Python standard library.
-# No third-party dependencies are required.
+# Laptop UDP Receiver Stage A & C
+# vgamepad is required for virtual Xbox 360 controller emulation.
+# This requires the ViGEmBus driver to be installed on Windows.
+vgamepad
