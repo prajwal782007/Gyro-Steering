@@ -21,8 +21,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private var isCalibrated = false
     private val deadzone = 1.0f // ±1 degree deadzone
 
-    private lateinit var throttleController: com.prajwal.phonesteering.controls.AnalogThrottleController
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -30,16 +28,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
         // Keep screen on during steering
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
-        val maxTravelPx = 200f * resources.displayMetrics.density
-        throttleController = com.prajwal.phonesteering.controls.AnalogThrottleController(maxTravelPx) { throttle ->
-            com.prajwal.phonesteering.network.UdpStreamer.setThrottle(throttle)
-            runOnUiThread {
-                binding.tvThrottleValue.text = "${(throttle * 100).toInt()}%"
-                binding.pbThrottle.progress = (throttle * 100).toInt()
-            }
-        }
-        binding.flAcceleratorZone.setOnTouchListener(throttleController)
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
@@ -54,40 +42,32 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         }
 
         binding.btnToggleStream.setOnClickListener {
-            if (com.prajwal.phonesteering.network.UdpStreamer.isStreamingActive()) {
-                throttleController.resetThrottle()
-                com.prajwal.phonesteering.network.UdpStreamer.stopStreaming()
-                binding.btnToggleStream.text = "START STREAMING"
-                binding.tvNetworkStatus.text = "Streaming stopped"
-            } else {
-                val ip = binding.etIpAddress.text.toString().trim()
-                val portStr = binding.etPort.text.toString().trim()
-                
-                if (!isCalibrated) {
-                    binding.tvNetworkStatus.text = "Set steering center before starting."
-                    return@setOnClickListener
-                }
-                if (ip.isEmpty()) {
-                    binding.tvNetworkStatus.text = "Invalid IP address."
-                    return@setOnClickListener
-                }
-                val port = portStr.toIntOrNull()
-                if (port == null || port !in 1..65535) {
-                    binding.tvNetworkStatus.text = "Invalid port."
-                    return@setOnClickListener
-                }
-                
-                binding.btnToggleStream.text = "STOP STREAMING"
-                com.prajwal.phonesteering.network.UdpStreamer.startStreaming(ip, port) { status ->
-                    runOnUiThread {
-                        binding.tvNetworkStatus.text = status
-                        if (status.startsWith("Send error")) {
-                            binding.btnToggleStream.text = "START STREAMING"
-                        }
-                    }
-                }
+            val ip = binding.etIpAddress.text.toString().trim()
+            val portStr = binding.etPort.text.toString().trim()
+            
+            if (!isCalibrated) {
+                binding.tvNetworkStatus.text = "Set steering center before starting."
+                return@setOnClickListener
             }
+            if (ip.isEmpty()) {
+                binding.tvNetworkStatus.text = "Invalid IP address."
+                return@setOnClickListener
+            }
+            val port = portStr.toIntOrNull()
+            if (port == null || port !in 1..65535) {
+                binding.tvNetworkStatus.text = "Invalid port."
+                return@setOnClickListener
+            }
+
+            // Start SteeringActivity
+            val intent = android.content.Intent(this, SteeringActivity::class.java).apply {
+                putExtra("IP_ADDRESS", ip)
+                putExtra("PORT", port)
+                putExtra("CENTER_ANGLE", centerAngle)
+            }
+            startActivity(intent)
         }
+
 
         binding.btnSendTestPacket.setOnClickListener {
             val ip = binding.etIpAddress.text.toString().trim()
@@ -128,7 +108,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     override fun onPause() {
         super.onPause()
         sensorManager.unregisterListener(this)
-        throttleController.resetThrottle()
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -151,11 +130,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             // 1. Calculate relative angle with ±180° wraparound handling via AngleUtils
             val relativeAngle = AngleUtils.calculateRelativeAngle(currentYawDegrees, centerAngle)
 
-            // 2 & 3 & 4. Apply deadzone and clamp to ±90° via AngleUtils
+            // Apply deadzone and clamp to ±90° via AngleUtils
             val steeringAngle = AngleUtils.getSteeringAngle(relativeAngle, deadzone)
-
-            // Feed the final clamped steering angle to the UdpStreamer
-            com.prajwal.phonesteering.network.UdpStreamer.setSteeringAngle(steeringAngle)
 
             // Determine direction for UI feedback
             val direction = when {
@@ -193,10 +169,4 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
-
-    override fun onDestroy() {
-        super.onDestroy()
-        throttleController.resetThrottle()
-        com.prajwal.phonesteering.network.UdpStreamer.stopStreaming()
-    }
 }
