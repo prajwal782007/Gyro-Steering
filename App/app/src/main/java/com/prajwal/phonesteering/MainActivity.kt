@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private var isCalibrated = false
     private val deadzone = 1.0f // ±1 degree deadzone
 
+    private lateinit var throttleController: com.prajwal.phonesteering.controls.AnalogThrottleController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -28,6 +30,16 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
         // Keep screen on during steering
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        val maxTravelPx = 200f * resources.displayMetrics.density
+        throttleController = com.prajwal.phonesteering.controls.AnalogThrottleController(maxTravelPx) { throttle ->
+            com.prajwal.phonesteering.network.UdpStreamer.setThrottle(throttle)
+            runOnUiThread {
+                binding.tvThrottleValue.text = "${(throttle * 100).toInt()}%"
+                binding.pbThrottle.progress = (throttle * 100).toInt()
+            }
+        }
+        binding.flAcceleratorZone.setOnTouchListener(throttleController)
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
@@ -43,6 +55,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
         binding.btnToggleStream.setOnClickListener {
             if (com.prajwal.phonesteering.network.UdpStreamer.isStreamingActive()) {
+                throttleController.resetThrottle()
                 com.prajwal.phonesteering.network.UdpStreamer.stopStreaming()
                 binding.btnToggleStream.text = "START STREAMING"
                 binding.tvNetworkStatus.text = "Streaming stopped"
@@ -115,6 +128,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     override fun onPause() {
         super.onPause()
         sensorManager.unregisterListener(this)
+        throttleController.resetThrottle()
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -182,6 +196,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onDestroy() {
         super.onDestroy()
+        throttleController.resetThrottle()
         com.prajwal.phonesteering.network.UdpStreamer.stopStreaming()
     }
 }
