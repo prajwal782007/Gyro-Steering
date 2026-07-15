@@ -17,6 +17,7 @@ class UdpReceiver:
         self.phone_ip = "Unknown"
         self.phone_port = 0
         self.current_angle = 0.0
+        self.current_throttle = 0.0
         self.latest_sequence = -1
         
         self.packets_sec = 0
@@ -96,6 +97,7 @@ class UdpReceiver:
                 
                 self.phone_port = sender_port
                 self.current_angle = packet.angle
+                self.current_throttle = packet.throttle
                 self.last_packet_time = time.monotonic()
                 self._pps_counter += 1
                 

@@ -11,6 +11,7 @@ def print_status(receiver, controller):
         ip = receiver.phone_ip
         port = receiver.phone_port
         angle = receiver.current_angle
+        throttle = receiver.current_throttle
         seq = receiver.latest_sequence
         pps = receiver.packets_sec
         missing = receiver.estimated_missing
@@ -27,9 +28,9 @@ def print_status(receiver, controller):
         age_ms = int((now - last_time) * 1000)
         if age_ms > 250:
             status = "STREAM TIMEOUT"
-            failsafe = "CENTERED"
+            failsafe = "CENTERED + THROTTLE RELEASED"
         else:
-            status = "RECEIVING LIVE STEERING"
+            status = "RECEIVING LIVE CONTROL"
             failsafe = "NORMAL"
 
     direction = "CENTER"
@@ -40,6 +41,7 @@ def print_status(receiver, controller):
         
     ctrl_status = "ACTIVE" if controller.available else "UNAVAILABLE"
     ctrl_steer = f"{controller.current_normalized_x:+.3f}" if controller.available else "+0.000"
+    ctrl_throttle = f"{controller.current_throttle:.3f}" if controller.available else "0.000"
         
     output = []
     output.append("========================================")
@@ -52,6 +54,7 @@ def print_status(receiver, controller):
     output.append("")
     output.append(f"Current angle:       {angle:+.3f}°")
     output.append(f"Direction:           {direction}")
+    output.append(f"Throttle:            {throttle * 100:.1f}%")
     output.append(f"Sequence:            {seq}")
     output.append("")
     output.append(f"Packets/sec:         {pps}")
@@ -64,6 +67,7 @@ def print_status(receiver, controller):
     output.append("")
     output.append(f"Virtual controller:  {ctrl_status}")
     output.append(f"Controller steering: {ctrl_steer}")
+    output.append(f"Controller throttle: {ctrl_throttle}")
     output.append(f"Fail-safe:           {failsafe}")
     
     return "\n".join(output)
@@ -73,12 +77,13 @@ def controller_worker(receiver, controller):
         with receiver.lock:
             last_time = receiver.last_packet_time
             angle = receiver.current_angle
+            throttle = receiver.current_throttle
             
         now = time.monotonic()
         if last_time == 0.0 or (now - last_time) > 0.250:
             controller.center()
         else:
-            controller.set_steering_angle(angle)
+            controller.set_control_state(angle, throttle)
             
         time.sleep(0.01) # 100 Hz
 
@@ -102,8 +107,8 @@ def main():
     try:
         while True:
             time.sleep(0.1) # 10 Hz refresh
-            # Move cursor up 23 lines and reprint
-            sys.stdout.write("\033[23F")
+            # Move cursor up 25 lines and reprint
+            sys.stdout.write("\033[25F")
             sys.stdout.write(print_status(receiver, controller) + "\n")
             sys.stdout.flush()
     except KeyboardInterrupt:
