@@ -6,9 +6,10 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.prajwal.phonesteering.databinding.ActivityMainBinding
-import kotlin.math.roundToInt
+import com.prajwal.phonesteering.utils.AngleUtils
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
 
@@ -18,18 +19,25 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     private var centerAngle = 0f
     private var isCalibrated = false
+    private val deadzone = 1.0f // ±1 degree deadzone
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Keep screen on during steering
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
 
+        if (rotationSensor == null) {
+            binding.tvCalibratedStatus.text = "Error: Sensor not found!"
+        }
+
         binding.btnSetCenter.setOnClickListener {
-            // The logic for setting the center will happen in the sensor update
-            // We just flag that we want to calibrate the next reading
+            // Flag to recalibrate on next sensor event
             isCalibrated = false 
         }
     }
@@ -37,7 +45,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     override fun onResume() {
         super.onResume()
         rotationSensor?.let {
-            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
         }
     }
 
@@ -60,25 +68,49 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             if (!isCalibrated) {
                 centerAngle = currentYawDegrees
                 isCalibrated = true
-                binding.tvCalibratedStatus.text = "Center calibrated: YES"
+                binding.tvCalibratedStatus.text = "Center: Calibrated ✓"
             }
 
-            var relativeAngle = currentYawDegrees - centerAngle
+            // 1. Calculate relative angle with ±180° wraparound handling via AngleUtils
+            val relativeAngle = AngleUtils.calculateRelativeAngle(currentYawDegrees, centerAngle)
 
-            // Normalize to -180 to 180
-            if (relativeAngle > 180) relativeAngle -= 360
-            if (relativeAngle < -180) relativeAngle += 360
+            // 2 & 3 & 4. Apply deadzone and clamp to ±90° via AngleUtils
+            val steeringAngle = AngleUtils.getSteeringAngle(relativeAngle, deadzone)
 
-            // We want left to be negative and right to be positive.
-            // Azimuth usually increases clockwise. 
-            // In many cases, rotating left (counter-clockwise) decreases the angle.
-            // Let's verify the display.
-            
-            binding.tvAngleValue.text = String.format("%.1f°", relativeAngle)
+            // Determine direction for UI feedback
+            val direction = when {
+                steeringAngle < -deadzone -> "LEFT"
+                steeringAngle > deadzone -> "RIGHT"
+                else -> "CENTER"
+            }
+
+            // Update UI (Visual Indicator + Debug info)
+            updateUI(currentYawDegrees, relativeAngle, steeringAngle, direction)
         }
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        // Not needed for this prototype
+    private fun updateUI(rawYaw: Float, relative: Float, steering: Float, direction: String) {
+        binding.apply {
+            tvSteeringValue.text = String.format("%.1f°", steering)
+            tvDirection.text = direction
+            
+            // 5. Update horizontal steering indicator
+            // Progress 0 = -90°, 90 = 0°, 180 = +90°
+            pbSteering.progress = (steering + 90).toInt()
+            
+            // 6. Display debugging information
+            tvActualRotation.text = String.format("Actual Rotation: %.1f°", relative)
+            tvRawYaw.text = String.format("Raw Yaw: %.1f°", rawYaw)
+            
+            // Color feedback for direction
+            val color = when (direction) {
+                "LEFT" -> android.R.color.holo_red_light
+                "RIGHT" -> android.R.color.holo_green_light
+                else -> android.R.color.holo_blue_dark
+            }
+            tvDirection.setTextColor(getColor(color))
+        }
     }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 }
