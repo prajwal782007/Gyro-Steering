@@ -7,7 +7,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import com.prajwal.phonesteering.network.UdpStreamer
@@ -15,7 +15,7 @@ import com.prajwal.phonesteering.ui.SteeringScreen
 import com.prajwal.phonesteering.ui.theme.CyberpunkTheme
 import com.prajwal.phonesteering.utils.AngleUtils
 
-class SteeringActivity : ComponentActivity(), SensorEventListener {
+class SteeringActivity : AppCompatActivity(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
     private var rotationSensor: Sensor? = null
