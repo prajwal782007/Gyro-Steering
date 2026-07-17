@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/apk/res/tools"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#121212"
@@ -25,6 +25,15 @@
             android:text="STOP STREAMING"
             android:textColor="#FFFFFF"
             android:backgroundTint="#D32F2F" />
+
+        <Button
+            android:id="@+id/btnSetCenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="SET AS CENTER"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#1976D2" />
 
         <TextView
             android:id="@+id/tvNetworkStatus"

@@ -21,6 +21,7 @@ class SteeringActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var throttleController: AnalogThrottleController
 
     private var centerAngle = 0f
+    private var setCenterRequested = false
     private val deadzone = 1.0f // ±1 degree deadzone
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +54,10 @@ class SteeringActivity : AppCompatActivity(), SensorEventListener {
 
         binding.btnStopStream.setOnClickListener {
             finish() // This will trigger onDestroy and stop streaming
+        }
+
+        binding.btnSetCenter.setOnClickListener {
+            setCenterRequested = true
         }
 
         // Start streaming
@@ -90,6 +95,11 @@ class SteeringActivity : AppCompatActivity(), SensorEventListener {
 
             // orientation[0] is azimuth (yaw) in radians
             val currentYawDegrees = Math.toDegrees(orientation[0].toDouble()).toFloat()
+
+            if (setCenterRequested) {
+                centerAngle = currentYawDegrees
+                setCenterRequested = false
+            }
 
             // Calculate relative angle with ±180° wraparound handling via AngleUtils
             val relativeAngle = AngleUtils.calculateRelativeAngle(currentYawDegrees, centerAngle)
