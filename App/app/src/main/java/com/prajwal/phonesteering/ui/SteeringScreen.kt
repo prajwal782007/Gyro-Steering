@@ -85,59 +85,17 @@ fun SteeringScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Set As Centre Button
-            Box(
-                modifier = Modifier
-                    .clip(CutCornerShape(8.dp))
-                    .background(Color(0xFF0F172A))
-                    .border(2.dp, NeonBlue, CutCornerShape(8.dp))
-                    .clickable { onSetCenterClick() }
-                    .padding(horizontal = 48.dp, vertical = 16.dp)
-            ) {
-                Text(
-                    text = "SET AS CENTRE",
-                    color = White,
-                    style = CyberpunkTypography.titleLarge,
-                    fontWeight = FontWeight.Black
-                )
-            }
+            SetCenterButton(onClick = onSetCenterClick)
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Decelerate Button
-            Box(
-                modifier = Modifier
-                    .clip(CutCornerShape(8.dp))
-                    .background(Color(0xFF1A0F00))
-                    .border(2.dp, NeonOrange, CutCornerShape(8.dp))
-                    .clickable { onDecelerateClick() }
-                    .padding(horizontal = 32.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = "DECELERATE",
-                    color = NeonOrange,
-                    style = CyberpunkTypography.bodyLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            DecelerateButton(onClick = onDecelerateClick)
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Exit Button
-            Box(
-                modifier = Modifier
-                    .clip(CutCornerShape(8.dp))
-                    .background(Color(0xFF2A0F17))
-                    .border(2.dp, NeonRed, CutCornerShape(8.dp))
-                    .clickable { onExitClick() }
-                    .padding(horizontal = 32.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = "EXIT",
-                    color = NeonRed,
-                    style = CyberpunkTypography.bodyLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            ExitButton(onClick = onExitClick)
             
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -236,5 +194,62 @@ fun InfoPanel(label: String, value: String, valueColor: Color) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = label, color = White.copy(alpha = 0.7f), style = CyberpunkTypography.labelSmall)
         Text(text = value, color = valueColor, style = CyberpunkTypography.bodyLarge)
+    }
+}
+
+@Composable
+fun SetCenterButton(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .clip(CutCornerShape(8.dp))
+            .background(Color(0xFF0F172A))
+            .border(2.dp, NeonBlue, CutCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 48.dp, vertical = 16.dp)
+    ) {
+        Text(
+            text = "SET AS CENTRE",
+            color = White,
+            style = CyberpunkTypography.titleLarge,
+            fontWeight = FontWeight.Black
+        )
+    }
+}
+
+@Composable
+fun DecelerateButton(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .clip(CutCornerShape(8.dp))
+            .background(Color(0xFF1A0F00))
+            .border(2.dp, NeonOrange, CutCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 32.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = "DECELERATE",
+            color = NeonOrange,
+            style = CyberpunkTypography.bodyLarge,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun ExitButton(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .clip(CutCornerShape(8.dp))
+            .background(Color(0xFF2A0F17))
+            .border(2.dp, NeonRed, CutCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 32.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = "EXIT",
+            color = NeonRed,
+            style = CyberpunkTypography.bodyLarge,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
