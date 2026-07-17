@@ -29,6 +29,7 @@ fun SteeringScreen(
     sequenceNumber: Int,
     onSetCenterClick: () -> Unit,
     onExitClick: () -> Unit,
+    onDecelerateClick: () -> Unit,
     onThrottleChange: (Float) -> Unit,
     onBrakeChange: (Float) -> Unit
 ) {
@@ -97,6 +98,25 @@ fun SteeringScreen(
                     color = White,
                     style = CyberpunkTypography.titleLarge,
                     fontWeight = FontWeight.Black
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Decelerate Button
+            Box(
+                modifier = Modifier
+                    .clip(CutCornerShape(8.dp))
+                    .background(Color(0xFF1A0F00))
+                    .border(2.dp, NeonOrange, CutCornerShape(8.dp))
+                    .clickable { onDecelerateClick() }
+                    .padding(horizontal = 32.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = "DECELERATE",
+                    color = NeonOrange,
+                    style = CyberpunkTypography.bodyLarge,
+                    fontWeight = FontWeight.Bold
                 )
             }
 

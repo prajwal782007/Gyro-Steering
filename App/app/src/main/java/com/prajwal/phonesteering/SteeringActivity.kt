@@ -84,6 +84,10 @@ class SteeringActivity : AppCompatActivity(), SensorEventListener {
                     sequenceNumber = seqNum,
                     onSetCenterClick = { setCenterRequested = true },
                     onExitClick = { finish() },
+                    onDecelerateClick = {
+                        throttleState.value = 0f
+                        UdpStreamer.setThrottle(0f)
+                    },
                     onThrottleChange = {
                         throttleState.value = it
                         UdpStreamer.setThrottle(it)
