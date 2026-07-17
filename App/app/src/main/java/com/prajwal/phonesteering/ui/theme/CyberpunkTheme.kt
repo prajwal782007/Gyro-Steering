@@ -16,7 +16,6 @@ val NeonBlue = Color(0xFF00C8FF)
 val NeonGreen = Color(0xFF7DFF00)
 val NeonRed = Color(0xFFFF295D)
 val NeonOrange = Color(0xFFFFAA00)
-val NeonPurple = Color(0xFF9B5CFF)
 val White = Color(0xFFFFFFFF)
 val GlowColor = Color(0x6600C8FF) // Subtle blue glow for general elements
 
@@ -50,7 +49,7 @@ private val CyberpunkColorScheme = darkColorScheme(
     background = BackgroundDark,
     surface = BackgroundDark,
     primary = NeonBlue,
-    secondary = NeonPurple,
+    secondary = NeonBlue,
     tertiary = NeonGreen,
     error = NeonRed,
     onBackground = White,

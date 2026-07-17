@@ -217,7 +217,7 @@ fun BottomInfoBar(
         modifier = modifier
             .fillMaxWidth(0.8f)
             .height(50.dp)
-            .border(1.dp, NeonPurple.copy(alpha = 0.5f), CutCornerShape(8.dp))
+            .border(1.dp, NeonBlue.copy(alpha = 0.5f), CutCornerShape(8.dp))
             .background(Color(0xFF0D0514).copy(alpha = 0.8f))
             .padding(horizontal = 24.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -226,7 +226,7 @@ fun BottomInfoBar(
         InfoPanel("STEERING", String.format("%.1f°", steeringAngle), if (steeringAngle < 0) NeonBlue else NeonOrange)
         InfoPanel("THROTTLE", "${(throttle * 100).toInt()}%", NeonGreen)
         InfoPanel("STATUS", "LIVE CONTROL", NeonGreen)
-        InfoPanel("SEQ", sequenceNumber.toString(), NeonPurple)
+        InfoPanel("SEQ", sequenceNumber.toString(), NeonBlue)
         InfoPanel("LATENCY", "${latency}ms", NeonBlue)
     }
 }

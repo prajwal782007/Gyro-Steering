@@ -97,8 +97,8 @@ fun SteeringGauge(
 
             // Draw Needle
             rotate(degrees = animatedAngle, pivot = center) {
-                val needleColor = White
-                val needleBloom = NeonPurple.copy(alpha = 0.5f)
+                val needleColor = if (steeringAngle < 0) NeonBlue else NeonOrange
+                val needleBloom = NeonBlue.copy(alpha = 0.5f)
                 
                 // Bloom
                 drawLine(
