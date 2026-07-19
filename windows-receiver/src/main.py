@@ -12,6 +12,7 @@ def print_status(receiver, controller):
         port = receiver.phone_port
         angle = receiver.current_angle
         throttle = receiver.current_throttle
+        brake = receiver.current_brake
         seq = receiver.latest_sequence
         pps = receiver.packets_sec
         missing = receiver.estimated_missing
@@ -42,6 +43,7 @@ def print_status(receiver, controller):
     ctrl_status = "ACTIVE" if controller.available else "UNAVAILABLE"
     ctrl_steer = f"{controller.current_normalized_x:+.3f}" if controller.available else "+0.000"
     ctrl_throttle = f"{controller.current_throttle:.3f}" if controller.available else "0.000"
+    ctrl_brake = f"{controller.current_brake:.3f}" if controller.available else "0.000"
         
     output = []
     output.append("========================================")
@@ -55,6 +57,7 @@ def print_status(receiver, controller):
     output.append(f"Current angle:       {angle:+.3f}°")
     output.append(f"Direction:           {direction}")
     output.append(f"Throttle:            {throttle * 100:.1f}%")
+    output.append(f"Brake:               {brake * 100:.1f}%")
     output.append(f"Sequence:            {seq}")
     output.append("")
     output.append(f"Packets/sec:         {pps}")
@@ -68,6 +71,7 @@ def print_status(receiver, controller):
     output.append(f"Virtual controller:  {ctrl_status}")
     output.append(f"Controller steering: {ctrl_steer}")
     output.append(f"Controller throttle: {ctrl_throttle}")
+    output.append(f"Controller brake:    {ctrl_brake}")
     output.append(f"Fail-safe:           {failsafe}")
     
     return "\n".join(output)
@@ -78,12 +82,13 @@ def controller_worker(receiver, controller):
             last_time = receiver.last_packet_time
             angle = receiver.current_angle
             throttle = receiver.current_throttle
+            brake = receiver.current_brake
             
         now = time.monotonic()
         if last_time == 0.0 or (now - last_time) > 0.250:
             controller.center()
         else:
-            controller.set_control_state(angle, throttle)
+            controller.set_control_state(angle, throttle, brake)
             
         time.sleep(0.01) # 100 Hz
 
@@ -107,8 +112,8 @@ def main():
     try:
         while True:
             time.sleep(0.1) # 10 Hz refresh
-            # Move cursor up 25 lines and reprint
-            sys.stdout.write("\033[25F")
+            # Move cursor up 27 lines and reprint
+            sys.stdout.write("\033[27F")
             sys.stdout.write(print_status(receiver, controller) + "\n")
             sys.stdout.flush()
     except KeyboardInterrupt:
