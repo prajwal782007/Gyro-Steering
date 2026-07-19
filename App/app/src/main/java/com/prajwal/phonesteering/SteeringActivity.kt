@@ -44,7 +44,8 @@ class SteeringActivity : AppCompatActivity(), SensorEventListener {
         val ip = intent.getStringExtra("IP_ADDRESS") ?: ""
         val port = intent.getIntExtra("PORT", 5005)
         centerAngle = intent.getFloatExtra("CENTER_ANGLE", 0f)
-        
+        val layoutType = intent.getIntExtra("LAYOUT_TYPE", 1)
+
         networkIpPortState.value = "$ip:$port"
 
         // Init sensors
@@ -74,6 +75,7 @@ class SteeringActivity : AppCompatActivity(), SensorEventListener {
                 val seqNum by sequenceNumberState
 
                 SteeringScreen(
+                    layoutType = layoutType,
                     steeringAngle = steering,
                     throttle = throttle,
                     brake = brake,
