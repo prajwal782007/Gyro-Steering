@@ -24,6 +24,16 @@ class DashboardActivity : AppCompatActivity() {
                             putExtra("IP_ADDRESS", ip)
                             putExtra("PORT", port)
                             putExtra("CENTER_ANGLE", centerAngle)
+                            putExtra("LAYOUT_TYPE", 1)
+                        }
+                        startActivity(intent)
+                    },
+                    onControl2Click = {
+                        val intent = Intent(this, SteeringActivity::class.java).apply {
+                            putExtra("IP_ADDRESS", ip)
+                            putExtra("PORT", port)
+                            putExtra("CENTER_ANGLE", centerAngle)
+                            putExtra("LAYOUT_TYPE", 2)
                         }
                         startActivity(intent)
                     },

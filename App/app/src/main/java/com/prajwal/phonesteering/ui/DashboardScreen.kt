@@ -18,6 +18,7 @@ import com.prajwal.phonesteering.ui.theme.*
 @Composable
 fun DashboardScreen(
     onControl1Click: () -> Unit,
+    onControl2Click: () -> Unit,
     onBackClick: () -> Unit
 ) {
     Box(
