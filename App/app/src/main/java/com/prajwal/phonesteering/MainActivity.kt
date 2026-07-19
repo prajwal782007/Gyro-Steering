@@ -59,8 +59,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 return@setOnClickListener
             }
 
-            // Start SteeringActivity
-            val intent = android.content.Intent(this, SteeringActivity::class.java).apply {
+            // Start DashboardActivity
+            val intent = android.content.Intent(this, DashboardActivity::class.java).apply {
                 putExtra("IP_ADDRESS", ip)
                 putExtra("PORT", port)
                 putExtra("CENTER_ANGLE", centerAngle)
