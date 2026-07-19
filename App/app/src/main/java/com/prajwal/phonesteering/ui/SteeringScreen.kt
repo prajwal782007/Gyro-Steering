@@ -131,18 +131,9 @@ fun SteeringScreen(
                     )
                 }
                 
-                // Center Buttons
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    SetCenterButton(onClick = onSetCenterClick)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    DecelerateButton(onClick = onDecelerateClick)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    ExitButton(onClick = onExitClick)
-                }
-
+                // Spacer to push steering to right
+                Spacer(modifier = Modifier.weight(0.1f))
+    
                 // Right side: Interactive Steering Wheel
                 Box(
                     modifier = Modifier
