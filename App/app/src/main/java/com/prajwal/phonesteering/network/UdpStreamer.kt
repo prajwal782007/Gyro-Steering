@@ -16,6 +16,9 @@ object UdpStreamer {
     @Volatile
     private var latestThrottle: Float = 0f
     
+    @Volatile
+    private var latestBrake: Float = 0f
+    
     private var isStreaming = AtomicBoolean(false)
     private var streamingThread: Thread? = null
     private val sequenceNumber = AtomicLong(1)
@@ -26,6 +29,10 @@ object UdpStreamer {
 
     fun setThrottle(throttle: Float) {
         latestThrottle = throttle
+    }
+    
+    fun setBrake(brake: Float) {
+        latestBrake = brake
     }
     
     fun startStreaming(host: String, port: Int, onStatusUpdate: (String) -> Unit) {
@@ -48,10 +55,11 @@ object UdpStreamer {
                     
                     val angle = latestSteeringAngle
                     val throttle = latestThrottle
+                    val brake = latestBrake
                     val seq = sequenceNumber.getAndIncrement()
                     
                     // Format explicitly as required: exactly three decimal places, locale-independent
-                    val payload = String.format(Locale.US, "CONTROL|%.3f|%.3f|%d", angle, throttle, seq)
+                    val payload = String.format(Locale.US, "CONTROL|%.3f|%.3f|%.3f|%d", angle, throttle, brake, seq)
                     val bytes = payload.toByteArray(Charsets.UTF_8)
                     
                     val packet = DatagramPacket(bytes, bytes.size, address, port)
