@@ -87,6 +87,8 @@ class SteeringActivity : AppCompatActivity(), SensorEventListener {
                     onDecelerateClick = {
                         throttleState.value = 0f
                         UdpStreamer.setThrottle(0f)
+                        brakeState.value = 0f
+                        UdpStreamer.setBrake(0f)
                     },
                     onThrottleChange = {
                         throttleState.value = it
@@ -94,7 +96,7 @@ class SteeringActivity : AppCompatActivity(), SensorEventListener {
                     },
                     onBrakeChange = {
                         brakeState.value = it
-                        // Optional: Send brake to UDP if UdpStreamer supports it
+                        UdpStreamer.setBrake(it)
                     }
                 )
             }
@@ -114,6 +116,7 @@ class SteeringActivity : AppCompatActivity(), SensorEventListener {
         throttleState.value = 0f
         brakeState.value = 0f
         UdpStreamer.setThrottle(0f)
+        UdpStreamer.setBrake(0f)
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -154,6 +157,7 @@ class SteeringActivity : AppCompatActivity(), SensorEventListener {
         throttleState.value = 0f
         brakeState.value = 0f
         UdpStreamer.setThrottle(0f)
+        UdpStreamer.setBrake(0f)
         UdpStreamer.stopStreaming()
     }
 }
