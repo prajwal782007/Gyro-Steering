@@ -20,6 +20,10 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".DashboardActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
             android:name=".SteeringActivity"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
