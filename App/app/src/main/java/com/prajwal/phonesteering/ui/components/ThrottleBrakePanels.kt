@@ -71,19 +71,11 @@ fun ThrottleBrakePanels(
                 .pointerInput(Unit) {
                     detectDragGestures(
                         onDragStart = { offset ->
-                            val newValue = if (isBrake) {
-                                offset.y / size.height.toFloat()
-                            } else {
-                                1f - (offset.y / size.height.toFloat())
-                            }
+                            val newValue = 1f - (offset.y / size.height.toFloat())
                             onValueChanged(max(0f, min(1f, newValue)))
                         },
                         onDrag = { change, _ ->
-                            val newValue = if (isBrake) {
-                                change.position.y / size.height.toFloat()
-                            } else {
-                                1f - (change.position.y / size.height.toFloat())
-                            }
+                            val newValue = 1f - (change.position.y / size.height.toFloat())
                             onValueChanged(max(0f, min(1f, newValue)))
                         },
                         onDragEnd = {
@@ -120,13 +112,13 @@ fun ThrottleBrakePanels(
 
                 // Draw the fill
                 val fillHeight = canvasHeight * animatedValue
-                val fillTop = if (isBrake) 0f else canvasHeight - fillHeight
+                val fillTop = canvasHeight - fillHeight
                 
                 drawRoundRect(
                     brush = Brush.verticalGradient(
                         colors = listOf(color.copy(alpha = 0.8f), color.copy(alpha = 0.2f)),
                         startY = fillTop,
-                        endY = if (isBrake) fillHeight else canvasHeight
+                        endY = canvasHeight
                     ),
                     topLeft = Offset(0f, fillTop),
                     size = Size(canvasWidth, fillHeight),
@@ -143,11 +135,7 @@ fun ThrottleBrakePanels(
                     val arrowY = i * arrowHeight
                     
                     // Determine if this arrow should be glowing based on fill value
-                    val isGlowing = if (isBrake) {
-                        arrowY <= fillHeight
-                    } else {
-                        arrowY >= fillTop
-                    }
+                    val isGlowing = arrowY >= fillTop
 
                     val arrowColor = if (isGlowing) color else color.copy(alpha = 0.2f)
 
