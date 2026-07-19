@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.prajwal.phonesteering.ui.components.SteeringGauge
 import com.prajwal.phonesteering.ui.components.ThrottleBrakePanels
+import com.prajwal.phonesteering.ui.components.TouchSteeringWheel
 import com.prajwal.phonesteering.ui.theme.*
 
 @Composable
@@ -32,7 +33,8 @@ fun SteeringScreen(
     onExitClick: () -> Unit,
     onDecelerateClick: () -> Unit,
     onThrottleChange: (Float) -> Unit,
-    onBrakeChange: (Float) -> Unit
+    onBrakeChange: (Float) -> Unit,
+    onSteeringChange: (Float) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -141,7 +143,7 @@ fun SteeringScreen(
                     ExitButton(onClick = onExitClick)
                 }
 
-                // Right side: Steering Gauge
+                // Right side: Interactive Steering Wheel
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
@@ -149,7 +151,10 @@ fun SteeringScreen(
                         .padding(start = 32.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    SteeringGauge(steeringAngle = steeringAngle)
+                    TouchSteeringWheel(
+                        steeringAngle = steeringAngle,
+                        onSteeringChange = onSteeringChange
+                    )
                 }
             }
         }

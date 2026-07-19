@@ -99,6 +99,13 @@ class SteeringActivity : AppCompatActivity(), SensorEventListener {
                     onBrakeChange = {
                         brakeState.value = it
                         UdpStreamer.setBrake(it)
+                    },
+                    onSteeringChange = {
+                        if (layoutType == 2) {
+                            steeringAngleState.value = it
+                            UdpStreamer.setSteeringAngle(it)
+                            sequenceNumberState.value = (sequenceNumberState.value + 1) % 100000
+                        }
                     }
                 )
             }
@@ -122,7 +129,12 @@ class SteeringActivity : AppCompatActivity(), SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
+        val layoutType = intent.getIntExtra("LAYOUT_TYPE", 1)
+        
         if (event?.sensor?.type == Sensor.TYPE_ROTATION_VECTOR) {
+            // Only update steering from gyro if using Layout 1
+            if (layoutType == 2) return
+
             val rotationMatrix = FloatArray(9)
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
             
