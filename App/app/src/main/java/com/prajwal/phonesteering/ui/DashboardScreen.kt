@@ -47,12 +47,33 @@ fun DashboardScreen(
                     .background(Color(0xFF0F172A))
                     .border(2.dp, NeonBlue, CutCornerShape(8.dp))
                     .clickable(onClick = onControl1Click)
-                    .padding(vertical = 24.dp),
+                    .padding(vertical = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "CONTROL 1",
+                    text = "CONTROL 1 (Split Layout)",
                     color = NeonBlue,
+                    style = CyberpunkTypography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Control 2 Button
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .clip(CutCornerShape(8.dp))
+                    .background(Color(0xFF170F2A))
+                    .border(2.dp, NeonOrange, CutCornerShape(8.dp))
+                    .clickable(onClick = onControl2Click)
+                    .padding(vertical = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "CONTROL 2 (Left Hand Drive)",
+                    color = NeonOrange,
                     style = CyberpunkTypography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
