@@ -108,7 +108,7 @@ fun SteeringScreen(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp, top = 60.dp, bottom = 60.dp),
+                    .padding(start = 32.dp, end = 32.dp, top = 60.dp, bottom = 60.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
