@@ -11,6 +11,154 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.prajwal.phonesteering.ui.components.SteeringGauge
+import com.prajwal.phonesteering.ui.components.ThrottleBrakePanels
+import com.prajwal.phonesteering.ui.theme.*
+
+@Composable
+fun SteeringScreen(
+    layoutType: Int = 1,
+    steeringAngle: Float,
+    throttle: Float,
+    brake: Float,
+    networkStatus: String,
+    networkIpPort: String,
+    packetsPerSec: Int,
+    latency: Int,
+    sequenceNumber: Int,
+    onSetCenterClick: () -> Unit,
+    onExitClick: () -> Unit,
+    onDecelerateClick: () -> Unit,
+    onThrottleChange: (Float) -> Unit,
+    onBrakeChange: (Float) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(BackgroundDark)
+            .padding(16.dp)
+    ) {
+        // Top Navigation Bar
+        TopNavBar(
+            networkStatus = networkStatus,
+            networkIpPort = networkIpPort,
+            packetsPerSec = packetsPerSec
+        )
+
+        if (layoutType == 1) {
+            // Layout 1: Split controls
+            // Left Brake Panel
+            ThrottleBrakePanels(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 32.dp),
+                isBrake = true,
+                value = brake,
+                onValueChanged = onBrakeChange
+            )
+
+            // Right Accelerator Panel
+            ThrottleBrakePanels(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 32.dp),
+                isBrake = false,
+                value = throttle,
+                onValueChanged = onThrottleChange
+            )
+
+            // Center Area (Gauge + Buttons)
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(0.5f)
+                ) {
+                    SteeringGauge(steeringAngle = steeringAngle)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Set As Centre Button
+                SetCenterButton(onClick = onSetCenterClick)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Decelerate Button
+                DecelerateButton(onClick = onDecelerateClick)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Exit Button
+                ExitButton(onClick = onExitClick)
+                
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        } else {
+            // Layout 2: Controls on Left, Steering on Right
+            Row(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp, top = 60.dp, bottom = 60.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Left side: Brake and Throttle together
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ThrottleBrakePanels(
+                        isBrake = true,
+                        value = brake,
+                        onValueChanged = onBrakeChange
+                    )
+                    ThrottleBrakePanels(
+                        isBrake = false,
+                        value = throttle,
+                        onValueChanged = onThrottleChange
+                    )
+                }
+                
+                // Center Buttons
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    SetCenterButton(onClick = onSetCenterClick)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    DecelerateButton(onClick = onDecelerateClick)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    ExitButton(onClick = onExitClick)
+                }
+
+                // Right side: Steering Gauge
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .padding(start = 32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    SteeringGauge(steeringAngle = steeringAngle)
+                }
+            }
+        }
+
+        // Bottom Information Bar
+        BottomInfoBar(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            steeringAngle = steeringAngle,
+            throttle = throttle,
             latency = latency,
             sequenceNumber = sequenceNumber
         )
