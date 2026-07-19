@@ -150,6 +150,17 @@ fun SteeringScreen(
             }
         }
 
+        if (layoutType == 2) {
+            // Floating Exit Button for Layout 2
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 80.dp)
+            ) {
+                ExitButton(onClick = onExitClick)
+            }
+        }
+
         // Bottom Information Bar
         BottomInfoBar(
             modifier = Modifier.align(Alignment.BottomCenter),
