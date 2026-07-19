@@ -11,6 +11,7 @@ class VirtualController:
         self.gamepad = None
         self.current_normalized_x = 0.0
         self.current_throttle = 0.0
+        self.current_brake = 0.0
         self.is_centered = True
         
         try:
@@ -25,10 +26,11 @@ class VirtualController:
             print("ERROR: Could not initialize virtual Xbox controller.")
             print("Check that the Windows virtual gamepad driver (ViGEmBus) is installed.")
             
-    def set_control_state(self, angle: float, throttle: float):
+    def set_control_state(self, angle: float, throttle: float, brake: float):
         """
         Takes a raw steering angle in degrees (-90.0 to 90.0) and applies it to the virtual left-stick X-axis.
         Takes a throttle value (0.0 to 1.0) and applies it to the right trigger.
+        Takes a brake value (0.0 to 1.0) and applies it to the left trigger.
         """
         if not self.available:
             return
@@ -36,16 +38,18 @@ class VirtualController:
         # Proportional mapping: -90 -> -1.0, 90 -> 1.0
         normalized = angle / 90.0
         
-        # Defensive clamp
         normalized = max(-1.0, min(1.0, normalized))
         throttle_clamped = max(0.0, min(1.0, throttle))
+        brake_clamped = max(0.0, min(1.0, brake))
         
         self.current_normalized_x = normalized
         self.current_throttle = throttle_clamped
+        self.current_brake = brake_clamped
         self.is_centered = False
         
         self.gamepad.left_joystick_float(x_value_float=normalized, y_value_float=0.0)
         self.gamepad.right_trigger_float(value_float=throttle_clamped)
+        self.gamepad.left_trigger_float(value_float=brake_clamped)
         self.gamepad.update()
         
     def center(self):
@@ -58,10 +62,12 @@ class VirtualController:
             
         self.current_normalized_x = 0.0
         self.current_throttle = 0.0
+        self.current_brake = 0.0
         self.is_centered = True
         
         self.gamepad.left_joystick_float(x_value_float=0.0, y_value_float=0.0)
         self.gamepad.right_trigger_float(value_float=0.0)
+        self.gamepad.left_trigger_float(value_float=0.0)
         self.gamepad.update()
         
     def stop(self):
