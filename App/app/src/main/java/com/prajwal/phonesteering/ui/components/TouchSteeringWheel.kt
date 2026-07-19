@@ -48,7 +48,7 @@ fun TouchSteeringWheel(
 
         Box(
             modifier = Modifier
-                .size(250.dp)
+                .size(320.dp)
                 .clip(CircleShape)
                 .background(Color(0xFF111111))
                 .pointerInput(Unit) {
