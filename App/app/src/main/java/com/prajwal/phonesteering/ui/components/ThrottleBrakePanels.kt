@@ -140,17 +140,10 @@ fun ThrottleBrakePanels(
                     val arrowColor = if (isGlowing) color else color.copy(alpha = 0.2f)
 
                     val path = Path().apply {
-                        if (isBrake) {
-                            // Downward chevron
-                            moveTo(arrowXOffset, arrowY)
-                            lineTo(canvasWidth / 2f, arrowY + 20f)
-                            lineTo(canvasWidth - arrowXOffset, arrowY)
-                        } else {
-                            // Upward chevron
-                            moveTo(arrowXOffset, arrowY)
-                            lineTo(canvasWidth / 2f, arrowY - 20f)
-                            lineTo(canvasWidth - arrowXOffset, arrowY)
-                        }
+                        // Upward chevron
+                        moveTo(arrowXOffset, arrowY)
+                        lineTo(canvasWidth / 2f, arrowY - 20f)
+                        lineTo(canvasWidth - arrowXOffset, arrowY)
                     }
 
                     drawPath(
