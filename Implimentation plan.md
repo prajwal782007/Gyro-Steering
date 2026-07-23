@@ -1,4 +1,4 @@
-ow that the requirement is finally nailed down, here's the full implementation plan, from empty folders to actually steering a car in a Windows game.
+Now that the requirement is finally nailed down, here's the full implementation plan, from empty folders to actually steering a car in a Windows game.
 
 The target behavior is:
 
