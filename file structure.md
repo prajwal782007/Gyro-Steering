@@ -1,6 +1,6 @@
 Gyro-Steering/
 │
-├── main-implementatio-plan.md
+├── main-implementation-plan.md
 │
 ├── app/                              ← Android Studio has access ONLY here
 │   │
