@@ -1,4 +1,4 @@
-Gyro-steering/
+Gyro-Steering/
 │
 ├── main-implementation-plan.md
 │
